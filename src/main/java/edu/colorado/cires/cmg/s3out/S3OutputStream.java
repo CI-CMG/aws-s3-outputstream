@@ -37,6 +37,7 @@ public class S3OutputStream extends OutputStream {
     private S3ClientMultipartUpload s3;
     private String bucket;
     private String key;
+    private ObjectMetadata objectMetadata;
     private int partSizeMib = MIN_PART_SIZE_MIB;
     private boolean autoComplete = true;
     private int uploadQueueSize = 1;
@@ -78,6 +79,17 @@ public class S3OutputStream extends OutputStream {
      */
     public Builder key(String key) {
       this.key = key;
+      return this;
+    }
+
+    /**
+     * Sets the metadata that will be applied to a file.
+     *
+     * @param objectMetadata the file metadata
+     * @return this Builder
+     */
+    public Builder objectMetadata(ObjectMetadata objectMetadata) {
+      this.objectMetadata = objectMetadata;
       return this;
     }
 
@@ -161,7 +173,7 @@ public class S3OutputStream extends OutputStream {
       if (partSizeMib < MIN_PART_SIZE_MIB) {
         throw new IllegalArgumentException("Part size MiB must be at least " + MIN_PART_SIZE_MIB);
       }
-      return new S3OutputStream(s3, bucket, key, partSizeMib * MiB, autoComplete, uploadQueueSize);
+      return new S3OutputStream(s3, bucket, key, objectMetadata,partSizeMib * MiB, autoComplete, uploadQueueSize);
     }
   }
 
@@ -178,14 +190,14 @@ public class S3OutputStream extends OutputStream {
   private boolean complete;
 
 
-  S3OutputStream(S3ClientMultipartUpload s3, String bucket, String key, int maxBufferSize, boolean autoComplete, int queueSize) {
+  S3OutputStream(S3ClientMultipartUpload s3, String bucket, String key, ObjectMetadata objectMetadata, int maxBufferSize, boolean autoComplete, int queueSize) {
     this.uploadQueue = new LinkedBlockingDeque<>(queueSize);
     this.s3 = s3;
     this.bucket = bucket;
     this.key = key;
     this.maxBufferSize = maxBufferSize;
     complete = autoComplete;
-    uploadId = s3.createMultipartUpload(bucket, key);
+    uploadId = s3.createMultipartUpload(bucket, key, objectMetadata);
     newBuffer();
     consumer = new Thread(new UploadConsumer());
     consumer.start();

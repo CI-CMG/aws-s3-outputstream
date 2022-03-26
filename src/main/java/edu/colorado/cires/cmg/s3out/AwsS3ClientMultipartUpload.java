@@ -79,11 +79,15 @@ public class AwsS3ClientMultipartUpload implements S3ClientMultipartUpload {
   }
 
   @Override
-  public String createMultipartUpload(String bucket, String key) {
+  public String createMultipartUpload(String bucket, String key, ObjectMetadata objectMetadata) {
 
     CreateMultipartUploadRequest.Builder builder = CreateMultipartUploadRequest.builder()
-        .bucket(bucket)
-        .key(key);
+            .bucket(bucket)
+            .key(key);
+
+    if (objectMetadata != null) {
+      objectMetadata.apply(builder);
+    }
 
     contentTypeResolver.resolveContentType(key).ifPresent(builder::contentType);
 

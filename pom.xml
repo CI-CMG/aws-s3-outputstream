@@ -45,6 +45,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <sign.serverId>gpg-sign</sign.serverId>
     <slf4j.version>1.7.32</slf4j.version>
     <javadoc.version>3.3.1</javadoc.version>
     <jacoco.version>0.8.7</jacoco.version>
@@ -187,7 +188,7 @@
           <releaseProfiles>release,site-publish</releaseProfiles>
           <goals>deploy site</goals>
           <tagNameFormat>v@{project.version}</tagNameFormat>
-          <arguments>-Pdep-check</arguments>
+          <arguments>-Pdep-check -D${sign.serverId}</arguments>
         </configuration>
       </plugin>
 
@@ -274,7 +275,6 @@
                 <replacementProperty>
                   <property>git.remote.origin.url</property>
                   <propertyOutputSuffix>suffix</propertyOutputSuffix>
-                  git@github.com\:CI-CMG/trackline-simplifier.git
                   <token>^.+/(.+).git$</token>
                   <value>$1</value>
                   <regex>true</regex>
@@ -308,15 +308,17 @@
             </executions>
           </plugin>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
+            <groupId>org.simplify4u.plugins</groupId>
+            <artifactId>sign-maven-plugin</artifactId>
+            <version>1.0.0</version>
             <executions>
               <execution>
-                <id>sign-artifacts</id>
-                <phase>verify</phase>
                 <goals>
                   <goal>sign</goal>
                 </goals>
+                <configuration>
+                  <skipNoKey>false</skipNoKey>
+                </configuration>
               </execution>
             </executions>
           </plugin>

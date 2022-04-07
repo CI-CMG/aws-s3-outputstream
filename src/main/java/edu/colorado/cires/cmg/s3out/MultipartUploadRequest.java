@@ -50,32 +50,6 @@ public class MultipartUploadRequest {
     return Optional.ofNullable(objectMetadata);
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    MultipartUploadRequest that = (MultipartUploadRequest) o;
-    return Objects.equals(bucket, that.bucket) && Objects.equals(key, that.key) && Objects.equals(objectMetadata,
-        that.objectMetadata);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(bucket, key, objectMetadata);
-  }
-
-  @Override
-  public String toString() {
-    return "MultipartUploadConfiguration{" +
-        "bucket='" + bucket + '\'' +
-        ", key='" + key + '\'' +
-        ", objectMetadata=" + objectMetadata +
-        '}';
-  }
 
   /**
    * Builds a {@link MultipartUploadRequest}.

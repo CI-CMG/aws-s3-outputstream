@@ -30,7 +30,7 @@
     <connection>scm:git:git@github.com:CI-CMG/aws-s3-outputstream.git</connection>
     <developerConnection>scm:git:git@github.com:CI-CMG/aws-s3-outputstream.git</developerConnection>
     <url>https://github.com/CI-CMG/aws-s3-outputstream</url>
-    <tag>HEAD</tag>
+    <tag>1.1</tag>
   </scm>
 
   <distributionManagement>

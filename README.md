@@ -31,7 +31,7 @@ Here is how to create a S3OutputStream with all the available options:
 ```java
 OutputStream out = S3OutputStream.builder()
     .s3(s3)
-    .request(MultipartUploadRequest.builder().bucket(bucketName).key(key).build())
+    .uploadRequest(MultipartUploadRequest.builder().bucket(bucketName).key(key).build())
     .partSizeMib(partSizeMib)
     .uploadQueueSize(queueSize)
     .autoComplete(true)

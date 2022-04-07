@@ -197,7 +197,12 @@ public class S3OutputStream extends OutputStream {
     this.key = key;
     this.maxBufferSize = maxBufferSize;
     complete = autoComplete;
-    uploadId = s3.createMultipartUpload(bucket, key, objectMetadata);
+    uploadId = s3.createMultipartUpload(
+        MultipartUploadRequest.builder()
+            .bucket(bucket)
+            .key(key)
+            .objectMetadata(objectMetadata)
+            .build());
     newBuffer();
     consumer = new Thread(new UploadConsumer());
     consumer.start();

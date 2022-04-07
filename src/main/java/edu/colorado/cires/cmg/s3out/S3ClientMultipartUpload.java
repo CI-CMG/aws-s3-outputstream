@@ -27,20 +27,20 @@ public interface S3ClientMultipartUpload {
    * @param bucket the bucket name
    * @param key the key where a file will be uploaded to in the bucket
    * @return a upload ID for the pending upload
+   * @deprecated Replaced by {@link #createMultipartUpload(MultipartUploadRequest)}
    */
-  default String createMultipartUpload(String bucket, String key) {
-    return this.createMultipartUpload(bucket, key, null);
-  }
+  @Deprecated
+  String createMultipartUpload(String bucket, String key);
 
   /**
    * Initiates a multipart upload to a S3 bucket.
    *
-   * @param bucket the bucket name
-   * @param key the key where a file will be uploaded to in the bucket
-   * @param objectMetadata the file metadata
+   * @param multipartUploadRequest details for the upload: bucket, key, metadata, etc.
    * @return a upload ID for the pending upload
    */
-  String createMultipartUpload(String bucket, String key, ObjectMetadata objectMetadata);
+  default String createMultipartUpload(MultipartUploadRequest multipartUploadRequest) {
+    return createMultipartUpload(multipartUploadRequest.getBucket(), multipartUploadRequest.getKey());
+  }
 
   /**
    * Uploads a part of a multipart upload.

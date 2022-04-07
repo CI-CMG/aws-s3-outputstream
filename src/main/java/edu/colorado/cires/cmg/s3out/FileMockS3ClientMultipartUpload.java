@@ -71,8 +71,15 @@ public class FileMockS3ClientMultipartUpload implements S3ClientMultipartUpload 
   }
 
   @Override
-  public String createMultipartUpload(String bucket, String key, ObjectMetadata objectMetadata) {
-    MultipartUploadState multipartUploadState = new MultipartUploadState(bucket, key);
+  public String createMultipartUpload(String bucket, String key) {
+    return createMultipartUpload(MultipartUploadRequest.builder().bucket(bucket).key(key).build());
+  }
+
+  @Override
+  public String createMultipartUpload(MultipartUploadRequest multipartUploadRequest) {
+    MultipartUploadState multipartUploadState = new MultipartUploadState(
+        multipartUploadRequest.getBucket(),
+        multipartUploadRequest.getKey());
     uploadStateMap.put(multipartUploadState.getId(), multipartUploadState);
     return multipartUploadState.getId();
   }

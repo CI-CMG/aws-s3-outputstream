@@ -16,23 +16,37 @@ public class MultipartUploadRequest {
 
   private final String bucket;
   private final String key;
-  private final ObjectMetadata objectMetadata;
+  private final ObjectMetadataCustomizer objectMetadata;
 
-  private MultipartUploadRequest(String bucket, String key, ObjectMetadata objectMetadata) {
+  private MultipartUploadRequest(String bucket, String key, ObjectMetadataCustomizer objectMetadata) {
     this.bucket = bucket;
     this.key = key;
     this.objectMetadata = objectMetadata;
   }
 
+  /**
+   * Returns the bucket name.
+   * Never null.
+   * @return the bucket name
+   */
   public String getBucket() {
     return bucket;
   }
 
+  /**
+   * Returns the bucket key
+   * Never null.
+   * @return the bucket key
+   */
   public String getKey() {
     return key;
   }
 
-  public Optional<ObjectMetadata> getObjectMetadata() {
+  /**
+   * Returns and {@link Optional} containing a {@link ObjectMetadataCustomizer} if available or an empty {@link Optional} otherwise.
+   * @return an {@link Optional}lly wrapped {@link ObjectMetadataCustomizer}
+   */
+  public Optional<ObjectMetadataCustomizer> getObjectMetadata() {
     return Optional.ofNullable(objectMetadata);
   }
 
@@ -70,7 +84,7 @@ public class MultipartUploadRequest {
 
     private String bucket;
     private String key;
-    private ObjectMetadata objectMetadata;
+    private ObjectMetadataCustomizer objectMetadata;
 
     private Builder() {
 
@@ -104,7 +118,7 @@ public class MultipartUploadRequest {
      * @param objectMetadata the file metadata
      * @return this Builder
      */
-    public Builder objectMetadata(ObjectMetadata objectMetadata) {
+    public Builder objectMetadata(ObjectMetadataCustomizer objectMetadata) {
       this.objectMetadata = objectMetadata;
       return this;
     }

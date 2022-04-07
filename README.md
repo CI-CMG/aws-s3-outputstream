@@ -12,7 +12,7 @@ Add the following dependency to your Maven pom.xml
     <dependency>
       <groupId>io.github.ci-cmg</groupId>
       <artifactId>aws-s3-outputstream</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0</version>
     </dependency>
 ```
 
@@ -20,7 +20,8 @@ Add the following dependency to your Maven pom.xml
 
 The minimal way to create a S3OutputStream is as follows:
 ```java
-OutputStream out = S3OutputStream.builder().s3(s3).bucket(bucketName).key(key).build();
+MultipartUploadRequest request = MultipartUploadRequest.builder().bucket(bucketName).key(key).build();
+OutputStream out = S3OutputStream.builder().s3(s3).uploadRequest(request).build();
 ```
 
 Where in the above example s3 is an instance of S3ClientMultipartUpload (described below), bucketName is the name of
@@ -30,8 +31,7 @@ Here is how to create a S3OutputStream with all the available options:
 ```java
 OutputStream out = S3OutputStream.builder()
     .s3(s3)
-    .bucket(bucketName)
-    .key(key)
+    .request(MultipartUploadRequest.builder().bucket(bucketName).key(key).build())
     .partSizeMib(partSizeMib)
     .uploadQueueSize(queueSize)
     .autoComplete(true)
@@ -49,7 +49,7 @@ be mocked for testing.  Two implementations are provided:
 An instance of AwsS3ClientMultipartUpload can be created as follows:
 ```java
 S3ClientMultipartUpload s3 = AwsS3ClientMultipartUpload.builder()
-    .s3(s3)
+    .s3(s3Client)
     .contentTypeResolver(contentTypeResolver)
     .build();
 ```
@@ -57,6 +57,13 @@ S3ClientMultipartUpload s3 = AwsS3ClientMultipartUpload.builder()
 The contentTypeResolver resolves the MIME type for files uploaded to S3. A default
 implementation is provided if not specified in the AwsS3ClientMultipartUpload builder.
 An instance of NoContentTypeResolver can be provided if MIME types should not be used.
+
+### Object Metadata
+Object metadata can be supplied in the MultipartUploadRequest object via the objectMetadata() method in
+the builder.  This accepts an implementation of ObjectMetadataCustomizer.  This library provides
+one implementation, ObjectMetadata, which allows the user to set most of the values allowed in the AWS
+SDK through a builder.  However, if new metadata types are made available, a custom implementation of the
+interface has access to the SDK builder and can set additional values.
 
 ### Upload Performance
 A S3OutputStream uploads a file in parts. partSizeMib represents the size of the parts to 
@@ -88,8 +95,7 @@ as follows:
         InputStream inputStream = Files.newInputStream(source);
         S3OutputStream s3OutputStream = S3OutputStream.builder()
             .s3(s3)
-            .bucket(bucket)
-            .key(key)
+            .uploadRequest(MultipartUploadRequest.builder().bucket(bucketName).key(key).build())
             .autoComplete(false)
             .build();
     ) {
@@ -101,7 +107,7 @@ as follows:
 Note the call to s3OutputStream.done(). This should be called after all data has been uploaded, before
 calling close or the end of the try-with-resources block. This signals that the upload was successful
 and when the S3OutputStream is closed, the completion signal will be sent. If done() is not called
-before close() and error was assumed to have occurred and an abort signal will be send in close() 
+before close() and error was assumed to have occurred and an abort signal will be sent in close() 
 instead.
 
 

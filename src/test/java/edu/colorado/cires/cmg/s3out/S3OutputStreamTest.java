@@ -43,7 +43,7 @@ public class S3OutputStreamTest {
 
     try (
         InputStream inputStream = Files.newInputStream(sourcePath);
-        OutputStream outputStream = new S3OutputStream(s3, BUCKET, key, null, maxBufferSize, autoComplete, queueSize);
+        OutputStream outputStream = new S3OutputStream(s3, MultipartUploadRequest.builder().bucket(BUCKET).key(key).build(), maxBufferSize, autoComplete, queueSize);
     ) {
       if (copyBufferSize == 1){
         long count;
@@ -104,7 +104,7 @@ public class S3OutputStreamTest {
 
     try (
         InputStream inputStream = Files.newInputStream(source);
-        S3OutputStream outputStream = new S3OutputStream(s3, BUCKET, key, null, maxBufferSize, autoComplete, queueSize);
+        S3OutputStream outputStream = new S3OutputStream(s3, MultipartUploadRequest.builder().bucket(BUCKET).key(key).build(), maxBufferSize, autoComplete, queueSize);
     ) {
       IOUtils.copy(inputStream, outputStream);
       outputStream.done();
@@ -130,7 +130,7 @@ public class S3OutputStreamTest {
     RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
       try (
           InputStream inputStream = Files.newInputStream(source);
-          S3OutputStream outputStream = new S3OutputStream(s3, BUCKET, key, null, maxBufferSize, autoComplete, queueSize);
+          S3OutputStream outputStream = new S3OutputStream(s3, MultipartUploadRequest.builder().bucket(BUCKET).key(key).build(), maxBufferSize, autoComplete, queueSize);
       ) {
         IOUtils.copy(inputStream, outputStream);
         throw new RuntimeException("test error");

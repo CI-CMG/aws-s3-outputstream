@@ -37,7 +37,7 @@ public class S3OutputStream extends OutputStream {
     private S3ClientMultipartUpload s3;
     private String bucket;
     private String key;
-    private ObjectMetadata objectMetadata;
+    private MultipartUploadRequest uploadRequest;
     private int partSizeMib = MIN_PART_SIZE_MIB;
     private boolean autoComplete = true;
     private int uploadQueueSize = 1;
@@ -47,8 +47,7 @@ public class S3OutputStream extends OutputStream {
     }
 
     /**
-     * Sets the {@link S3ClientMultipartUpload} object for the {@link S3OutputStream}.
-     * Required.
+     * Sets the {@link S3ClientMultipartUpload} object for the {@link S3OutputStream}. Required.
      *
      * @param s3 the {@link S3ClientMultipartUpload}
      * @return this Builder
@@ -59,43 +58,45 @@ public class S3OutputStream extends OutputStream {
     }
 
     /**
-     * Sets the bucket name for the {@link S3OutputStream}.
-     * Required.
+     * Sets the bucket name for the {@link S3OutputStream}. Required.
      *
      * @param bucket the bucket name
      * @return this Builder
+     * @deprecated use {@link #uploadRequest(MultipartUploadRequest)}
      */
+    @Deprecated
     public Builder bucket(String bucket) {
       this.bucket = bucket;
       return this;
     }
 
     /**
-     * Sets the key where the file will be uploaded to in the bucket.
-     * Required.
+     * Sets the key where the file will be uploaded to in the bucket. Required.
      *
      * @param key the key where the file will be uploaded to in the bucket
      * @return this Builder
+     * @deprecated use {@link #uploadRequest(MultipartUploadRequest)}
      */
+    @Deprecated
     public Builder key(String key) {
       this.key = key;
       return this;
     }
 
+
     /**
-     * Sets the metadata that will be applied to a file.
+     * Sets upload request with bucket info and object metadata
      *
-     * @param objectMetadata the file metadata
+     * @param uploadRequest object
      * @return this Builder
      */
-    public Builder objectMetadata(ObjectMetadata objectMetadata) {
-      this.objectMetadata = objectMetadata;
+    public Builder uploadRequest(MultipartUploadRequest uploadRequest) {
+      this.uploadRequest = uploadRequest;
       return this;
     }
 
     /**
-     * Sets the part size to use when uploading in MiB. Must be at least 5.
-     * Default value: 5
+     * Sets the part size to use when uploading in MiB. Must be at least 5. Default value: 5
      *
      * @param partSizeMib the part size to use when uploading in MiB
      * @return this Builder
@@ -106,26 +107,20 @@ public class S3OutputStream extends OutputStream {
     }
 
     /**
-     * When a multipart file upload is completed, AWS S3 must be notified. Autocompletion is a
-     * convenience feature that allows a S3OutputStream to work like a normal {@link OutputStream}.  The
-     * main use case for this is where your code generates a S3OutputStream that must be
-     * passed to another library as a {@link OutputStream} that you do not control that is responsible for closing
-     * it. With autocompletion enabled, the AWS completion notification will always happen
-     * when the OutputStream is closed. This is fine, unless an exception occurs and close()
-     * is called in a finally block or try-with-resources (as should always be done).  In this
-     * scenario, the upload will be completed even if there was an error, rather than aborting
-     * the upload.  To ensure compatibility with java.io.OutputStream, autocompletion is enabled
-     * by default.
+     * When a multipart file upload is completed, AWS S3 must be notified. Autocompletion is a convenience feature that allows a S3OutputStream to
+     * work like a normal {@link OutputStream}.  The main use case for this is where your code generates a S3OutputStream that must be passed to
+     * another library as a {@link OutputStream} that you do not control that is responsible for closing it. With autocompletion enabled, the AWS
+     * completion notification will always happen when the OutputStream is closed. This is fine, unless an exception occurs and close() is called in a
+     * finally block or try-with-resources (as should always be done).  In this scenario, the upload will be completed even if there was an error,
+     * rather than aborting the upload.  To ensure compatibility with java.io.OutputStream, autocompletion is enabled by default.
      *
-     * If you have control over the code closing the S3OutputStream it is best to disable autocompletion
-     * as follows:
+     * If you have control over the code closing the S3OutputStream it is best to disable autocompletion as follows:
      * <pre>
      *     try (
      *         InputStream inputStream = Files.newInputStream(source);
      *         S3OutputStream s3OutputStream = S3OutputStream.builder()
      *             .s3(s3)
-     *             .bucket(bucket)
-     *             .key(key)
+     *             .uploadRequest(MultipartUploadRequest.builder().bucket(bucketName).key(key).build())
      *             .autoComplete(false)
      *             .build();
      *     ) {
@@ -134,11 +129,9 @@ public class S3OutputStream extends OutputStream {
      *     }
      * </pre>
      *
-     * Note the call to s3OutputStream.done(). This should be called after all data has been uploaded, before
-     * calling close or the end of the try-with-resources block. This signals that the upload was successful
-     * and when the S3OutputStream is closed, the completion signal will be sent. If done() is not called
-     * before close() and error was assumed to have occurred and an abort signal will be send in close()
-     * instead.
+     * Note the call to s3OutputStream.done(). This should be called after all data has been uploaded, before calling close or the end of the
+     * try-with-resources block. This signals that the upload was successful and when the S3OutputStream is closed, the completion signal will be
+     * sent. If done() is not called before close() and error was assumed to have occurred and an abort signal will be send in close() instead.
      *
      * @param autoComplete true to enable autocompletion
      * @return this Builder
@@ -149,12 +142,10 @@ public class S3OutputStream extends OutputStream {
     }
 
     /**
-     * A S3OutputStream uses a queue to allow multipart uploads to S3 to happen while additional
-     * buffers are being filled concurrently. The uploadQueueSize defines the number of parts
-     * to be queued before blocking population of additional parts.  The default value is 1.
-     * Specifying a higher value may improve upload speed at the expense of more heap usage.
-     * Using a value higher than one should be tested to see if any performance gains are achieved
-     * for your situation.
+     * A S3OutputStream uses a queue to allow multipart uploads to S3 to happen while additional buffers are being filled concurrently. The
+     * uploadQueueSize defines the number of parts to be queued before blocking population of additional parts.  The default value is 1. Specifying a
+     * higher value may improve upload speed at the expense of more heap usage. Using a value higher than one should be tested to see if any
+     * performance gains are achieved for your situation.
      *
      * @param uploadQueueSize the max number of buffers in the queue before blocking
      * @return this Builder
@@ -173,7 +164,13 @@ public class S3OutputStream extends OutputStream {
       if (partSizeMib < MIN_PART_SIZE_MIB) {
         throw new IllegalArgumentException("Part size MiB must be at least " + MIN_PART_SIZE_MIB);
       }
-      return new S3OutputStream(s3, bucket, key, objectMetadata,partSizeMib * MiB, autoComplete, uploadQueueSize);
+      MultipartUploadRequest request;
+      if (uploadRequest != null) {
+        request = uploadRequest;
+      } else {
+        request = MultipartUploadRequest.builder().bucket(bucket).key(key).build();
+      }
+      return new S3OutputStream(s3, request, partSizeMib * MiB, autoComplete, uploadQueueSize);
     }
   }
 
@@ -190,19 +187,15 @@ public class S3OutputStream extends OutputStream {
   private boolean complete;
 
 
-  S3OutputStream(S3ClientMultipartUpload s3, String bucket, String key, ObjectMetadata objectMetadata, int maxBufferSize, boolean autoComplete, int queueSize) {
+  S3OutputStream(S3ClientMultipartUpload s3, MultipartUploadRequest uploadRequest, int maxBufferSize, boolean autoComplete,
+      int queueSize) {
     this.uploadQueue = new LinkedBlockingDeque<>(queueSize);
     this.s3 = s3;
-    this.bucket = bucket;
-    this.key = key;
+    this.bucket = uploadRequest.getBucket();
+    this.key = uploadRequest.getKey();
     this.maxBufferSize = maxBufferSize;
     complete = autoComplete;
-    uploadId = s3.createMultipartUpload(
-        MultipartUploadRequest.builder()
-            .bucket(bucket)
-            .key(key)
-            .objectMetadata(objectMetadata)
-            .build());
+    uploadId = s3.createMultipartUpload(uploadRequest);
     newBuffer();
     consumer = new Thread(new UploadConsumer());
     consumer.start();

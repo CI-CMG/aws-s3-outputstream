@@ -73,7 +73,6 @@ public class S3OutputStreamTest {
       "test.txt,3,src/test/resources/test.txt,2",
   })
   public void testBuilder(String key, int queueSize, String source, int copyBufferSize) throws Exception {
-    boolean autoComplete = true;
     Path sourcePath = Paths.get(source);
 
     FileMockS3ClientMultipartUpload s3 = FileMockS3ClientMultipartUpload.builder().mockBucketDir(MOCK_BUCKETS_DIR).build();
@@ -141,6 +140,32 @@ public class S3OutputStreamTest {
 
     assertEquals(0, s3.getUploadStateMap().size());
 
+  }
+
+  @Test
+  public void testRepeatedClose() throws Exception {
+    String key = "test.txt";
+    int maxBufferSize = 100;
+    boolean autoComplete = false;
+    int queueSize = 1;
+    Path source = Paths.get("src/test/resources/test.txt");
+
+    FileMockS3ClientMultipartUpload s3 = FileMockS3ClientMultipartUpload.builder().mockBucketDir(MOCK_BUCKETS_DIR).build();
+
+    try (
+        InputStream inputStream = Files.newInputStream(source);
+        S3OutputStream outputStream = new S3OutputStream(s3, MultipartUploadRequest.builder().bucket(BUCKET).key(key).build(), maxBufferSize, autoComplete, queueSize);
+    ) {
+      IOUtils.copy(inputStream, outputStream);
+      outputStream.done();
+      outputStream.close();
+    }
+
+    String expected = new String(Files.readAllBytes(source), StandardCharsets.UTF_8);
+    String actual = new String(Files.readAllBytes(BUCKET_DIR.resolve(key)), StandardCharsets.UTF_8);
+
+    assertEquals(expected, actual);
+    assertEquals(0, s3.getUploadStateMap().size());
   }
 
 }

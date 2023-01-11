@@ -77,4 +77,25 @@
     <packageUrl regex="true">^pkg:maven/io\.netty/netty\-tcnative\-classes@.*$</packageUrl>
     <cve>CVE-2021-43797</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: commons-codec-1.11.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/commons\-codec/commons\-codec@.*$</packageUrl>
+    <cve>CVE-2021-37533</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: commons-logging-1.2.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/commons\-logging/commons\-logging@.*$</packageUrl>
+    <cve>CVE-2021-37533</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: utils-2.19.13.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/software\.amazon\.awssdk/utils@.*$</packageUrl>
+    <cve>CVE-2021-4277</cve>
+  </suppress>
 </suppressions>

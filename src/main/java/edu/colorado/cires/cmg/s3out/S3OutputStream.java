@@ -185,6 +185,7 @@ public class S3OutputStream extends OutputStream {
 
   private ByteBuffer buffer;
   private boolean complete;
+  private boolean closed;
 
 
   S3OutputStream(S3ClientMultipartUpload s3, MultipartUploadRequest uploadRequest, int maxBufferSize, boolean autoComplete,
@@ -342,23 +343,26 @@ public class S3OutputStream extends OutputStream {
 
   @Override
   public void close() throws IOException {
-    if (complete) {
-      uploadPart();
-      try {
-        uploadQueue.put(new UploadConsumerBuffer(null, true));
-        consumer.join();
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
+    if (!closed) {
+      closed = true;
+      if (complete) {
+        uploadPart();
+        try {
+          uploadQueue.put(new UploadConsumerBuffer(null, true));
+          consumer.join();
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+        }
+        complete();
+      } else {
+        try {
+          uploadQueue.put(new UploadConsumerBuffer(null, true));
+          consumer.join();
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+        }
+        abort();
       }
-      complete();
-    } else {
-      try {
-        uploadQueue.put(new UploadConsumerBuffer(null, true));
-        consumer.join();
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-      }
-      abort();
     }
   }
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.github.ci-cmg</groupId>
@@ -173,6 +174,20 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>${javadoc.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.owasp</groupId>
+          <artifactId>dependency-check-maven</artifactId>
+          <version>10.0.3</version>
+        </plugin>
+        <plugin>
+          <groupId>com.github.spotbugs</groupId>
+          <artifactId>spotbugs-maven-plugin</artifactId>
+          <version>4.8.6.5</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.3.1</version>
         </plugin>
         <plugin>
           <groupId>org.owasp</groupId>
@@ -414,47 +429,47 @@
                 </goals>
                 <configuration>
                   <target>
-                    <delete dir="${project.build.directory}/project-documentation" quiet="true" />
+                    <delete dir="${project.build.directory}/project-documentation" quiet="true"/>
                     <exec dir="${project.build.directory}" executable="git">
-                      <arg value="clone" />
-                      <arg value="--depth=1" />
-                      <arg value="git@github.com:CI-CMG/project-documentation.git" />
+                      <arg value="clone"/>
+                      <arg value="--depth=1"/>
+                      <arg value="git@github.com:CI-CMG/project-documentation.git"/>
                     </exec>
                     <exec dir="${project.build.directory}/project-documentation" executable="git">
-                      <arg value="remote" />
-                      <arg value="add" />
-                      <arg value="javadoc" />
-                      <arg value="git@github.com:CI-CMG/project-documentation.git" />
+                      <arg value="remote"/>
+                      <arg value="add"/>
+                      <arg value="javadoc"/>
+                      <arg value="git@github.com:CI-CMG/project-documentation.git"/>
                     </exec>
                     <exec dir="${project.build.directory}/project-documentation" executable="git" failonerror="false">
-                      <arg value="rm" />
-                      <arg value="-r" />
-                      <arg value="${git.remote.origin.url.suffix}/${project.version}" />
+                      <arg value="rm"/>
+                      <arg value="-r"/>
+                      <arg value="${git.remote.origin.url.suffix}/${project.version}"/>
                     </exec>
-                    <mkdir dir="${project.build.directory}/project-documentation/${git.remote.origin.url.suffix}" />
+                    <mkdir dir="${project.build.directory}/project-documentation/${git.remote.origin.url.suffix}"/>
                     <copy todir="${project.build.directory}/project-documentation/${git.remote.origin.url.suffix}">
-                      <fileset file="${project.build.directory}/site-resources/index.html" />
+                      <fileset file="${project.build.directory}/site-resources/index.html"/>
                     </copy>
                     <copy todir="${project.build.directory}/project-documentation/${git.remote.origin.url.suffix}/${project.version}">
-                      <fileset dir="${project.build.directory}/site" />
+                      <fileset dir="${project.build.directory}/site"/>
                     </copy>
                     <exec dir="${project.build.directory}/project-documentation" executable="git">
-                      <arg value="add" />
-                      <arg value="${git.remote.origin.url.suffix}/index.html" />
+                      <arg value="add"/>
+                      <arg value="${git.remote.origin.url.suffix}/index.html"/>
                     </exec>
                     <exec dir="${project.build.directory}/project-documentation" executable="git">
-                      <arg value="add" />
-                      <arg value="${git.remote.origin.url.suffix}/${project.version}" />
+                      <arg value="add"/>
+                      <arg value="${git.remote.origin.url.suffix}/${project.version}"/>
                     </exec>
                     <exec dir="${project.build.directory}/project-documentation" executable="git">
-                      <arg value="commit" />
-                      <arg value="-m" />
-                      <arg value="Update Documentation: ${git.remote.origin.url.suffix}/${project.version}" />
+                      <arg value="commit"/>
+                      <arg value="-m"/>
+                      <arg value="Update Documentation: ${git.remote.origin.url.suffix}/${project.version}"/>
                     </exec>
                     <exec dir="${project.build.directory}/project-documentation" executable="git">
-                      <arg value="push" />
-                      <arg value="javadoc" />
-                      <arg value="trunk" />
+                      <arg value="push"/>
+                      <arg value="javadoc"/>
+                      <arg value="trunk"/>
                     </exec>
                   </target>
                 </configuration>

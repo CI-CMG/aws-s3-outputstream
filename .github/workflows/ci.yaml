@@ -17,15 +17,15 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
-      - run: echo "$MAVEN_GPG_PRIVATE_KEY"
+      - run: echo "$MAVEN_GPG_PRIVATE_KEY" | base64 -d > gpg.key
         env:
           MAVEN_GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
       - name: build with maven
-        run: mvn -B -s settings.xml clean deploy -Pdep-check
+        run: mvn -B -s settings.xml clean install -Prelease -Dsign.keyFile=gpg.key
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-          SIGN_KEY_PASS: ${{ secrets.SIGN_KEY_PASS }}
-          SIGN_KEY: ${{ secrets.SIGN_KEY }}
+          SIGN_KEY_PASS: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+#          SIGN_KEY: ${{ secrets.SIGN_KEY }}
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
       - name: notify dependencies

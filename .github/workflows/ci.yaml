@@ -21,10 +21,10 @@ jobs:
         run: mvn -B -s settings.xml clean deploy -Pdep-check
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-          ARTIFACTORY_API_USERNAME: ${{ vars.ARTIFACTORY_API_USERNAME }}
-          ARTIFACTORY_API_KEY: ${{ secrets.ARTIFACTORY_API_KEY }}
-          ARTIFACTORY_SNAPSHOT_URL: ${{ vars.ARTIFACTORY_SNAPSHOT_URL }}
-          ARTIFACTORY_RELEASE_URL: ${{ vars.ARTIFACTORY_RELEASE_URL }}
+          SIGN_KEY_PASS: ${{ secrets.SIGN_KEY_PASS }}
+          SIGN_KEY: ${{ secrets.SIGN_KEY }}
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
       - name: notify dependencies
         run: |
           set -ex

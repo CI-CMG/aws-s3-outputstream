@@ -1,0 +1,37 @@
+name: maven build
+
+on:
+  push:
+    branches: [ "**" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: maven
+      - name: build with maven
+        run: mvn -B -s settings.xml clean deploy -Pdep-check
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+          ARTIFACTORY_API_USERNAME: ${{ vars.ARTIFACTORY_API_USERNAME }}
+          ARTIFACTORY_API_KEY: ${{ secrets.ARTIFACTORY_API_KEY }}
+          ARTIFACTORY_SNAPSHOT_URL: ${{ vars.ARTIFACTORY_SNAPSHOT_URL }}
+          ARTIFACTORY_RELEASE_URL: ${{ vars.ARTIFACTORY_RELEASE_URL }}
+      - name: notify dependencies
+        run: |
+          set -ex
+          mvn dependency:list | grep 'SNAPSHOT:compile' > dependencies.txt || true
+          mvn -q -Dexec.executable='echo' -Dexec.args='${project.groupId}:${project.artifactId}:${project.packaging}:${project.version}' exec:exec | grep :jar: > artifacts.txt
+          echo "{\"event_type\":\"update-dependencies\",\"client_payload\":{\"project\":\"${{ github.event.repository.name }}:${{ github.head_ref || github.ref_name }}\",\"artifacts\":\"$( cat artifacts.txt | awk -v ORS='\\n' '1' )\",\"dependencies\":\"$( cat dependencies.txt | awk -v ORS='\\n' '1' )\"}}" > dependency-action.json
+          curl -n "https://api.github.com/repos/CI-CMG/maven-dependency-build/dispatches" \
+          --header 'Accept: application/vnd.github+json' \
+          --header "Authorization: token ${{ secrets.RELEASE_PAT }}" \
+          --data @dependency-action.json

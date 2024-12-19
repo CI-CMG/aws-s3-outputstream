@@ -21,7 +21,7 @@ public class UploadPartParams {
   private final ByteBuffer buffer;
   private final String checksumAlgorithm;
 
-  public UploadPartParams(String bucket, String key, String uploadId, int partNumber, ByteBuffer buffer, String checksumAlgorithm) {
+  private UploadPartParams(String bucket, String key, String uploadId, int partNumber, ByteBuffer buffer, String checksumAlgorithm) {
     this.bucket = bucket;
     this.key = key;
     this.uploadId = uploadId;

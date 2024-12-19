@@ -177,6 +177,7 @@ public class S3OutputStream extends OutputStream {
   private final S3ClientMultipartUpload s3;
   private final String bucket;
   private final String key;
+  private final String checksumAlgorithm;
   private final int maxBufferSize;
   private final String uploadId;
   private final List<CompletedPart> completedParts = new ArrayList<>();
@@ -194,6 +195,7 @@ public class S3OutputStream extends OutputStream {
     this.s3 = s3;
     this.bucket = uploadRequest.getBucket();
     this.key = uploadRequest.getKey();
+    this.checksumAlgorithm = uploadRequest.getChecksumAlgorithm();
     this.maxBufferSize = maxBufferSize;
     complete = autoComplete;
     uploadId = s3.createMultipartUpload(uploadRequest);
@@ -230,7 +232,14 @@ public class S3OutputStream extends OutputStream {
           }
           synchronized (completedParts) {
             int partNumber = completedParts.size() + 1;
-            completedParts.add(s3.uploadPart(bucket, key, uploadId, partNumber, buffer.getBuffer()));
+            UploadPartParams.Builder builder = UploadPartParams.builder()
+                    .bucket(bucket)
+                    .key(key)
+                    .uploadId(uploadId)
+                    .partNumber(partNumber)
+                    .buffer(buffer.getBuffer())
+                    .checksumAlgorithm(checksumAlgorithm);
+            completedParts.add(s3.uploadPart(builder.build()));
           }
         }
       } catch (InterruptedException e) {

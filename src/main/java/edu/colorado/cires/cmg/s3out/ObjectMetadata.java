@@ -834,7 +834,9 @@ public class ObjectMetadata implements ObjectMetadataCustomizer {
      *
      * @param checksumAlgorithm Indicates the algorithm you want Amazon S3 to use to create the checksum for the object.
      * @return this Builder
+     * @deprecated Use {@link MultipartUploadRequest.Builder#checksumAlgorithm(String)} instead
      */
+    @Deprecated
     public Builder checksumAlgorithm(String checksumAlgorithm) {
       this.checksumAlgorithm = checksumAlgorithm;
       return this;

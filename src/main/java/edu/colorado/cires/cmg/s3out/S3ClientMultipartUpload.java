@@ -51,8 +51,19 @@ public interface S3ClientMultipartUpload {
    * @param partNumber the incrementing number for this part in the upload
    * @param buffer a {@link ByteBuffer} containing the data to be uploaded in this part
    * @return a {@link CompletedPart} response object from the completed part upload
+   * @deprecated Replaced by {@link #uploadPart(UploadPartParams)}
    */
   CompletedPart uploadPart(String bucket, String key, String uploadId, int partNumber, ByteBuffer buffer);
+
+  /**
+   * Uploads a part of a multipart upload.
+   *
+   * @param uploadPartParams details for the upload: bucket, key, metadata, etc.
+   * @return a {@link CompletedPart} response object from the completed part upload
+   */
+  default CompletedPart uploadPart(UploadPartParams uploadPartParams) {
+    return uploadPart(uploadPartParams.getBucket(), uploadPartParams.getKey(), uploadPartParams.getUploadId(), uploadPartParams.getPartNumber(), uploadPartParams.getBuffer());
+  }
 
   /**
    * Triggers completion of the multipart upload.

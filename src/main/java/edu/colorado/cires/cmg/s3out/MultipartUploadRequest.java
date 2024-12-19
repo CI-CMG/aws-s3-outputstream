@@ -16,11 +16,13 @@ public class MultipartUploadRequest {
 
   private final String bucket;
   private final String key;
+  private final String checksumAlgorithm;
   private final ObjectMetadataCustomizer objectMetadata;
 
-  private MultipartUploadRequest(String bucket, String key, ObjectMetadataCustomizer objectMetadata) {
+  private MultipartUploadRequest(String bucket, String key, String checksumAlgorithm, ObjectMetadataCustomizer objectMetadata) {
     this.bucket = bucket;
     this.key = key;
+    this.checksumAlgorithm = checksumAlgorithm;
     this.objectMetadata = objectMetadata;
   }
 
@@ -43,6 +45,15 @@ public class MultipartUploadRequest {
   }
 
   /**
+   * Returns the checksum algorithm.
+   * Never null.
+   * @return the checksum algorithm
+   */
+  public String getChecksumAlgorithm() {
+    return checksumAlgorithm;
+  }
+
+  /**
    * Returns and {@link Optional} containing a {@link ObjectMetadataCustomizer} if available or an empty {@link Optional} otherwise.
    * @return an {@link Optional}lly wrapped {@link ObjectMetadataCustomizer}
    */
@@ -58,6 +69,7 @@ public class MultipartUploadRequest {
 
     private String bucket;
     private String key;
+    private String checksumAlgorithm;
     private ObjectMetadataCustomizer objectMetadata;
 
     private Builder() {
@@ -87,6 +99,17 @@ public class MultipartUploadRequest {
     }
 
     /**
+     * Sets the checksum algorithm for the {@link MultipartUploadRequest}. Required.
+     *
+     * @param checksumAlgorithm the checksum algorithm
+     * @return this Builder
+     */
+    public Builder checksumAlgorithm(String checksumAlgorithm) {
+      this.checksumAlgorithm = checksumAlgorithm;
+      return this;
+    }
+
+    /**
      * Sets the metadata that will be applied to a file.
      *
      * @param objectMetadata the file metadata
@@ -106,6 +129,7 @@ public class MultipartUploadRequest {
       return new MultipartUploadRequest(
           Objects.requireNonNull(bucket, "bucket is required"),
           Objects.requireNonNull(key, "key is required"),
+          checksumAlgorithm,
           objectMetadata);
     }
   }

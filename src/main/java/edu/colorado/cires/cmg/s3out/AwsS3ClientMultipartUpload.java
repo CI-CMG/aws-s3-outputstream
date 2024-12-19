@@ -10,6 +10,7 @@ import software.amazon.awssdk.services.s3.model.CompletedMultipartUpload;
 import software.amazon.awssdk.services.s3.model.CompletedPart;
 import software.amazon.awssdk.services.s3.model.CreateMultipartUploadRequest;
 import software.amazon.awssdk.services.s3.model.UploadPartRequest;
+import software.amazon.awssdk.services.s3.model.UploadPartResponse;
 
 /**
  * A {@link S3ClientMultipartUpload} that uses a {@link S3Client} to make calls to the AWS S3 SDK.
@@ -88,7 +89,8 @@ public class AwsS3ClientMultipartUpload implements S3ClientMultipartUpload {
 
     CreateMultipartUploadRequest.Builder builder = CreateMultipartUploadRequest.builder()
             .bucket(multipartUploadRequest.getBucket())
-            .key(multipartUploadRequest.getKey());
+            .key(multipartUploadRequest.getKey())
+            .checksumAlgorithm(multipartUploadRequest.getChecksumAlgorithm());
 
     contentTypeResolver.resolveContentType(multipartUploadRequest.getKey()).ifPresent(builder::contentType);
 
@@ -99,15 +101,34 @@ public class AwsS3ClientMultipartUpload implements S3ClientMultipartUpload {
 
   @Override
   public CompletedPart uploadPart(String bucket, String key, String uploadId, int partNumber, ByteBuffer buffer) {
-    UploadPartRequest uploadPartRequest = UploadPartRequest.builder()
-        .bucket(bucket)
-        .key(key)
-        .uploadId(uploadId)
-        .partNumber(partNumber).build();
+    return uploadPart(UploadPartParams.builder()
+            .bucket(bucket)
+            .key(key)
+            .uploadId(uploadId)
+            .partNumber(partNumber)
+            .buffer(buffer)
+            .build());
+  }
 
-    String etag = s3.uploadPart(uploadPartRequest, RequestBody.fromRemainingByteBuffer(buffer)).eTag();
+  @Override
+  public CompletedPart uploadPart(UploadPartParams uploadPartParams) {
+    UploadPartRequest.Builder builder = UploadPartRequest.builder()
+            .bucket(uploadPartParams.getBucket())
+            .key(uploadPartParams.getKey())
+            .checksumAlgorithm(uploadPartParams.getChecksumAlgorithm())
+            .uploadId(uploadPartParams.getUploadId())
+            .partNumber(uploadPartParams.getPartNumber());
 
-    return CompletedPart.builder().partNumber(partNumber).eTag(etag).build();
+    UploadPartResponse response = s3.uploadPart(builder.build(), RequestBody.fromRemainingByteBuffer(uploadPartParams.getBuffer()));
+
+    return CompletedPart.builder()
+            .partNumber(uploadPartParams.getPartNumber())
+            .checksumCRC32(response.checksumCRC32())
+            .checksumCRC32C(response.checksumCRC32C())
+            .checksumSHA1(response.checksumSHA1())
+            .checksumSHA256(response.checksumSHA256())
+            .eTag(response.eTag())
+            .build();
   }
 
   @Override

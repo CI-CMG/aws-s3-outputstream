@@ -86,17 +86,28 @@ public class FileMockS3ClientMultipartUpload implements S3ClientMultipartUpload 
 
   @Override
   public CompletedPart uploadPart(String bucket, String key, String uploadId, int partNumber, ByteBuffer buffer) {
-    MultipartUploadState multipartUploadState = uploadStateMap.get(uploadId);
-    if (!multipartUploadState.getBucket().equals(bucket)) {
-      throw new IllegalStateException("Incorrect bucket: " + bucket + " : " + multipartUploadState.getBucket());
+    return uploadPart(UploadPartParams.builder()
+            .bucket(bucket)
+            .key(key)
+            .uploadId(uploadId)
+            .partNumber(partNumber)
+            .buffer(buffer)
+            .build());
+  }
+
+  @Override
+  public CompletedPart uploadPart(UploadPartParams uploadPartParams) {
+    MultipartUploadState multipartUploadState = uploadStateMap.get(uploadPartParams.getUploadId());
+    if (!multipartUploadState.getBucket().equals(uploadPartParams.getBucket())) {
+      throw new IllegalStateException("Incorrect bucket: " + uploadPartParams.getBucket() + " : " + multipartUploadState.getBucket());
     }
-    if (!multipartUploadState.getKey().equals(key)) {
-      throw new IllegalStateException("Incorrect key: " + key + " : " + multipartUploadState.getKey());
+    if (!multipartUploadState.getKey().equals(uploadPartParams.getKey())) {
+      throw new IllegalStateException("Incorrect key: " + uploadPartParams.getKey() + " : " + multipartUploadState.getKey());
     }
-    if (partNumber != multipartUploadState.getParts().size() + 1) {
-      throw new IllegalStateException("Incorrect part number: " + partNumber + " : " + (multipartUploadState.getParts().size() + 1));
+    if (uploadPartParams.getPartNumber() != multipartUploadState.getParts().size() + 1) {
+      throw new IllegalStateException("Incorrect part number: " + uploadPartParams.getPartNumber() + " : " + (multipartUploadState.getParts().size() + 1));
     }
-    multipartUploadState.getParts().add(buffer);
+    multipartUploadState.getParts().add(uploadPartParams.getBuffer());
     return CompletedPart.builder().build();
   }
 

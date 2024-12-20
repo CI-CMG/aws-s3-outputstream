@@ -21,6 +21,8 @@ jobs:
         run: |
           mvn -B -s settings.xml \
           build-helper:parse-version \
+          -Dgit.password=${{ secrets.RELEASE_PAT }} \
+          -Dgit.username=${{ secrets.RELEASE_USERNAME }} \
           -DbranchName='${parsedVersion.majorVersion}.${parsedVersion.minorVersion}' \
           -DdevelopmentVersion='${parsedVersion.majorVersion}.${parsedVersion.nextMinorVersion}.0-SNAPSHOT' \
           release:branch

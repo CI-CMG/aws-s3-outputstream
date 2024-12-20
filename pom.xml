@@ -277,7 +277,7 @@
           <releaseProfiles>release,site-publish</releaseProfiles>
           <goals>deploy site</goals>
           <tagNameFormat>v@{project.version}</tagNameFormat>
-          <arguments>-DskipTests</arguments>
+          <arguments>-DskipTests -Dgit.username=${git.username} -Dgit.password=${git.password}</arguments>
           <username>${git.username}</username>
           <password>${git.password}</password>
         </configuration>

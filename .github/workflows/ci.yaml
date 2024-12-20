@@ -17,10 +17,8 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
-      - name: set up git
-        run: git config --global user.email bloop@bloop.org && git config --global user.name 'Bloopy McBloopFace'
       - name: build with maven
-        run: mvn -B -s settings.xml clean deploy site -Prelease -Psite-publish -Dgit.password=${{ secrets.RELEASE_PAT }} -Dgit.username=${{ secrets.RELEASE_USERNAME }}
+        run: mvn -B -s settings.xml clean deploy -Pdep-check
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
           SIGN_KEY_PASS: ${{ secrets.MAVEN_GPG_PASSPHRASE }}

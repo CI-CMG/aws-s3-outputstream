@@ -15,6 +15,8 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
+      - name: set up git
+        run: git config --global user.email bloop@bloop.org && git config --global user.name 'Bloopy McBloopFace'
       - name: build with maven
         run: |
           mvn -B -s settings.xml \

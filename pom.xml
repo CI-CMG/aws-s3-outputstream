@@ -4,7 +4,7 @@
 
   <groupId>io.github.ci-cmg</groupId>
   <artifactId>aws-s3-outputstream</artifactId>
-  <version>1.2.1-SNAPSHOT</version>
+  <version>1.2.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>${project.groupId}:${project.artifactId}</name>
@@ -418,13 +418,13 @@
                     <exec dir="${project.build.directory}" executable="git">
                       <arg value="clone" />
                       <arg value="--depth=1" />
-                      <arg value="git@github.com:CI-CMG/project-documentation.git" />
+                      <arg value="https://${git.username}:${git.password}@github.com/CI-CMG/project-documentation.git" />
                     </exec>
                     <exec dir="${project.build.directory}/project-documentation" executable="git">
                       <arg value="remote" />
                       <arg value="add" />
                       <arg value="javadoc" />
-                      <arg value="git@github.com:CI-CMG/project-documentation.git" />
+                      <arg value="https://${git.username}:${git.password}@github.com/CI-CMG/project-documentation.git" />
                     </exec>
                     <exec dir="${project.build.directory}/project-documentation" executable="git" failonerror="false">
                       <arg value="rm" />

@@ -435,12 +435,6 @@
                       <arg value="--depth=1" />
                       <arg value="https://${git.username}:${git.password}@github.com/CI-CMG/project-documentation.git" />
                     </exec>
-                    <exec dir="${project.build.directory}/project-documentation" executable="git">
-                      <arg value="remote" />
-                      <arg value="add" />
-                      <arg value="javadoc" />
-                      <arg value="https://${git.username}:${git.password}@github.com/CI-CMG/project-documentation.git" />
-                    </exec>
                     <exec dir="${project.build.directory}/project-documentation" executable="git" failonerror="false">
                       <arg value="rm"/>
                       <arg value="-r"/>

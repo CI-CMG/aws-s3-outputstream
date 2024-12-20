@@ -21,6 +21,8 @@ jobs:
         run: |
           mvn -B -s settings.xml \
           build-helper:parse-version \
+          -Dgit.password=${{ secrets.RELEASE_PAT }} \
+          -Dgit.username=${{ secrets.RELEASE_USERNAME }} \
           -Dresume=false -Dtag='v${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}' \
           -DreleaseVersion='${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}' \
           -DdevelopmentVersion='${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}-SNAPSHOT' \

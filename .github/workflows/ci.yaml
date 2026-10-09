@@ -16,10 +16,10 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-      - name: Set up Maven
-        uses: batmahdi/setup-maven@v2
-        with:
-          maven-version: '3.9.9'
+#      - name: Set up Maven
+#        uses: batmahdi/setup-maven@v2
+#        with:
+#          maven-version: '3.9.9'
       - name: build with maven
         run: mvn -X -B -s settings.xml clean deploy -Pdep-check
         env:

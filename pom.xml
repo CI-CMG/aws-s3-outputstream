@@ -48,17 +48,6 @@
     <git.password />
   </properties>
 
-<!--  <distributionManagement>-->
-<!--    <repository>-->
-<!--      <id>central</id>-->
-<!--      <url>https://central.sonatype.com/api/v1/publisher</url>-->
-<!--    </repository>-->
-<!--    <snapshotRepository>-->
-<!--      <id>central</id>-->
-<!--      <url>https://central.sonatype.com/repository/maven-snapshots/</url>-->
-<!--    </snapshotRepository>-->
-<!--  </distributionManagement>-->
-
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -251,9 +240,8 @@
         <extensions>true</extensions>
         <configuration>
           <publishingServerId>central</publishingServerId>
-<!--          <autoPublish>true</autoPublish>-->
-<!--          <waitUntil>published</waitUntil>-->
-          <deploymentName>McDeploy</deploymentName>
+          <autoPublish>true</autoPublish>
+          <waitUntil>published</waitUntil>
         </configuration>
       </plugin>
 
@@ -266,7 +254,7 @@
           <releaseProfiles>release,site-publish</releaseProfiles>
           <goals>deploy site</goals>
           <tagNameFormat>v@{project.version}</tagNameFormat>
-          <arguments>-X -Dgit.username=${git.username} -Dgit.password=${git.password}</arguments>
+          <arguments>-Dgit.username=${git.username} -Dgit.password=${git.password}</arguments>
           <username>${git.username}</username>
           <password>${git.password}</password>
         </configuration>

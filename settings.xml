@@ -4,7 +4,7 @@
     <server>
       <id>central</id>
       <username>${env.MAVEN_USERNAME}</username>
-      <password>${env.MAVEN_PASSWORD}</password>
+      <password>fake</password>
     </server>
   </servers>
 </settings>

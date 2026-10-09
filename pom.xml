@@ -107,6 +107,13 @@
       <version>3.3.3</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.github.spotbugs</groupId>
+      <artifactId>spotbugs-annotations</artifactId>
+      <version>4.10.4</version>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <reporting>
@@ -184,11 +191,6 @@
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
           <version>3.3.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-source-plugin</artifactId>
-          <version>3.2.1</version>
         </plugin>
         <plugin>
           <groupId>org.simplify4u.plugins</groupId>
@@ -287,6 +289,7 @@
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>4.10.4.1</version>
         <executions>
           <execution>
             <goals>

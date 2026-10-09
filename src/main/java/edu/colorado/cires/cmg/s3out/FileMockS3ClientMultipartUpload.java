@@ -1,5 +1,6 @@
 package edu.colorado.cires.cmg.s3out;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -66,6 +67,7 @@ public class FileMockS3ClientMultipartUpload implements S3ClientMultipartUpload 
   private final Map<String, MultipartUploadState> uploadStateMap = Collections.synchronizedMap(new HashMap<>());
   private final Path mockBucketDir;
 
+  @SuppressFBWarnings(value = "CT_CONSTRUCTOR_THROW", justification = "This is a mock implementation, used only for testing")
   private FileMockS3ClientMultipartUpload(Path mockBucketDir) {
     this.mockBucketDir = Objects.requireNonNull(mockBucketDir);
   }

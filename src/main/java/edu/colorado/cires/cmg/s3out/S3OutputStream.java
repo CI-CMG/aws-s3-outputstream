@@ -1,5 +1,6 @@
 package edu.colorado.cires.cmg.s3out;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -272,6 +273,7 @@ public class S3OutputStream extends OutputStream {
     newBuffer();
   }
 
+  @SuppressFBWarnings(value = "USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION", justification = "")
   private void complete() {
     synchronized (completedParts) {
       s3.completeMultipartUpload(bucket, key, uploadId, completedParts);
@@ -291,6 +293,7 @@ public class S3OutputStream extends OutputStream {
    *
    * @see Builder#autoComplete(boolean)
    */
+  @SuppressFBWarnings(value = "AT_STALE_THREAD_WRITE_OF_PRIMITIVE", justification = "done() should not be called in a different thread than what created the S3OutputStream object")
   public void done() {
     complete = true;
   }

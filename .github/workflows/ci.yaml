@@ -2,7 +2,7 @@ name: maven build
 
 on:
   push:
-    branches: [ "**" ]
+    branches: [ "trunk", "[0-9]+\\.[0-9]+" ]
   workflow_dispatch:
 
 jobs:

@@ -242,6 +242,7 @@
           <publishingServerId>central</publishingServerId>
           <autoPublish>true</autoPublish>
           <waitUntil>published</waitUntil>
+          <deploymentName>McDeploy</deploymentName>
         </configuration>
       </plugin>
 

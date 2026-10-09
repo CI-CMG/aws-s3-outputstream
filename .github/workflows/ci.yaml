@@ -16,12 +16,12 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-#      - name: Set up Maven
-#        uses: batmahdi/setup-maven@v2
-#        with:
-#          maven-version: '3.9.9'
+      - name: Customize Maven Version
+        uses: batmahdi/setup-maven@v3
+        with:
+          maven-version: '3.9.9'
       - name: build with maven
-        run: mvn -X -B -s settings.xml clean deploy -Pdep-check
+        run: mvn -B -s settings.xml clean deploy -Pdep-check
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
           SIGN_KEY_PASS: ${{ secrets.MAVEN_GPG_PASSPHRASE }}

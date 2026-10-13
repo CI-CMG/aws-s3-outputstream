@@ -7,6 +7,7 @@
       <password>${env.MAVEN_PASSWORD}</password>
       <repositoryOrigins>
         <repositoryOrigin>https://central.sonatype.com</repositoryOrigin>
+        <repositoryOrigin>https://repo.maven.apache.org</repositoryOrigin>
       </repositoryOrigins>
     </server>
   </servers>

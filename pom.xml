@@ -4,7 +4,7 @@
 
   <groupId>io.github.ci-cmg</groupId>
   <artifactId>aws-s3-outputstream</artifactId>
-  <version>1.2.6-SNAPSHOT</version>
+  <version>1.2.5-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>${project.groupId}:${project.artifactId}</name>
@@ -235,44 +235,9 @@
       </plugin>
 
       <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>clean-publish</id>
-            <phase>deploy</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target>
-                <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
-                <propertyregex property="groupPath" input="${project.groupId}" regexp="\." replace="/" casesensitive="false" />
-<!--                <echo message="${settings.localRepository}/${groupPath}/${project.artifactId}/${project.version}"/>-->
-                <delete file="${settings.localRepository}/${groupPath}/${project.artifactId}/${project.version}/_remote.repositories" quiet="true" />
-                <delete file="${settings.localRepository}/${groupPath}/${project.artifactId}/${project.version}/maven-metadata-local.xml" quiet="true" />
-              </target>
-            </configuration>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>ant-contrib</groupId>
-            <artifactId>ant-contrib</artifactId>
-            <version>1.0b3</version>
-            <exclusions>
-              <exclusion>
-                <groupId>ant</groupId>
-                <artifactId>ant</artifactId>
-              </exclusion>
-            </exclusions>
-          </dependency>
-        </dependencies>
-      </plugin>
-
-      <plugin>
         <groupId>org.sonatype.central</groupId>
         <artifactId>central-publishing-maven-plugin</artifactId>
-        <version>0.11.0</version>
+        <version>0.12.0</version>
         <extensions>true</extensions>
         <configuration>
           <publishingServerId>central</publishingServerId>

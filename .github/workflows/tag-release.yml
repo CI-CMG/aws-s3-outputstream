@@ -14,15 +14,11 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-#      - name: Customize Maven Version
-#        uses: batmahdi/setup-maven@v3
-#        with:
-#          maven-version: '3.9.9'
       - name: set up git
         run: git config --global user.email bloop@bloop.org && git config --global user.name 'Bloopy McBloopFace'
       - name: build with maven
         run: |
-          mvn -X -B -s settings.xml \
+          mvn -B -s settings.xml \
           build-helper:parse-version \
           -Dgit.password=${{ secrets.RELEASE_PAT }} \
           -Dgit.username=${{ secrets.RELEASE_USERNAME }} \
@@ -36,5 +32,5 @@ jobs:
           OSS_INDEX_PASSWORD: ${{ secrets.OSS_INDEX_PASSWORD }}
           SIGN_KEY_PASS: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
           SIGN_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}

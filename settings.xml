@@ -5,10 +5,9 @@
       <id>central</id>
       <username>${env.MAVEN_USERNAME}</username>
       <password>${env.MAVEN_PASSWORD}</password>
-<!--      <repositoryOrigins>-->
-<!--        <repositoryOrigin>https://central.sonatype.com:443</repositoryOrigin>-->
-<!--        <repositoryOrigin>https://repo.maven.apache.org</repositoryOrigin>-->
-<!--      </repositoryOrigins>-->
+      <repositoryOrigins>
+        <repositoryOrigin>https://central.sonatype.com</repositoryOrigin>
+      </repositoryOrigins>
     </server>
   </servers>
 </settings>
